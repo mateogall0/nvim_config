@@ -67,3 +67,5 @@ cmp.setup({
   })
 })
 
+vim.keymap.set('n', '<F2>', ':NvimTreeFocus<CR>', { noremap = true, silent = true })
+
