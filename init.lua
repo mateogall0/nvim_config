@@ -48,8 +48,13 @@ require("nvim-tree").setup()
 require("lualine").setup({ options = { theme = "tokyonight" } })
 require("telescope").setup()
 require("nvim-treesitter.configs").setup({
-  ensure_installed = { "lua", "python", "javascript", "bash", "c", "cpp" },
-  highlight = { enable = true }
+  ensure_installed = { "lua", "python", "javascript", "bash",
+    "c", "cpp", "gdscript", "godot_resource", "gdshader","rust", "java",
+    "c_sharp", "go", "gdscript", "html", "css", "json", "yaml",
+    "markdown", "markdown_inline", "toml", "vim", "query", "regex",
+    "assembly", "nasm", "glsl", "wgsl" },
+  highlight = { enable = true },
+  auto_install = true,
 })
 
 -- Completion setup
@@ -69,3 +74,5 @@ cmp.setup({
 
 vim.keymap.set('n', '<F2>', ':NvimTreeFocus<CR>', { noremap = true, silent = true })
 
+local lspconfig = require('lspconfig')
+lspconfig.pyright.setup{}
