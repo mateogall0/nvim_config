@@ -52,7 +52,7 @@ require("nvim-treesitter.configs").setup({
     "c", "cpp", "gdscript", "godot_resource", "gdshader","rust", "java",
     "c_sharp", "go", "gdscript", "html", "css", "json", "yaml",
     "markdown", "markdown_inline", "toml", "vim", "query", "regex",
-    "assembly", "nasm", "glsl", "wgsl" },
+    "nasm", "glsl", "wgsl" },
   highlight = { enable = true },
   auto_install = true,
 })
