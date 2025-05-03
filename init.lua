@@ -76,3 +76,5 @@ vim.keymap.set('n', '<F2>', ':NvimTreeFocus<CR>', { noremap = true, silent = tru
 
 local lspconfig = require('lspconfig')
 lspconfig.pyright.setup{}
+vim.cmd.colorscheme("tokyonight")
+
