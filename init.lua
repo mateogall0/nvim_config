@@ -44,6 +44,7 @@ require("lazy").setup({
 })
 
 -- Setup plugins
+require("nvim-web-devicons").setup()
 require("nvim-tree").setup()
 require("lualine").setup({ options = { theme = "tokyonight" } })
 require("telescope").setup()
@@ -78,3 +79,8 @@ local lspconfig = require('lspconfig')
 lspconfig.pyright.setup{}
 vim.cmd.colorscheme("tokyonight")
 
+
+vim.api.nvim_create_user_command("C", function(opts)
+  local cmd = table.concat(opts.fargs, " ")
+  vim.cmd("botright split | resize 10 | terminal " .. cmd)
+end, { nargs = "+" })
