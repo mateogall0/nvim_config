@@ -82,5 +82,35 @@ vim.cmd.colorscheme("tokyonight")
 
 vim.api.nvim_create_user_command("C", function(opts)
   local cmd = table.concat(opts.fargs, " ")
+  local start_time = vim.loop.hrtime()
+
   vim.cmd("botright split | resize 10 | terminal " .. cmd)
+
+  local term_win = vim.api.nvim_get_current_win()
+  local term_buf = vim.api.nvim_get_current_buf()
+
+  -- Auto-close on WinLeave
+  vim.api.nvim_create_autocmd("WinLeave", {
+    buffer = term_buf,
+    once = true,
+    callback = function()
+      if vim.api.nvim_win_is_valid(term_win) then
+        vim.api.nvim_win_close(term_win, true)
+      end
+    end,
+  })
+
+  -- Print exit code and duration
+  vim.api.nvim_create_autocmd("TermClose", {
+    buffer = term_buf,
+    once = true,
+    callback = function(args)
+      local elapsed = (vim.loop.hrtime() - start_time) / 1e9
+      local exit_code = args.data or 0
+
+      vim.schedule(function()
+        print(string.format("[Process exited %d] in %.2f seconds", exit_code, elapsed))
+      end)
+    end,
+  })
 end, { nargs = "+" })
