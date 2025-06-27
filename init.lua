@@ -84,7 +84,7 @@ vim.api.nvim_create_user_command("C", function(opts)
   local cmd = table.concat(opts.fargs, " ")
   local start_time = vim.loop.hrtime()
 
-  vim.cmd("botright split | resize 10 | terminal " .. cmd)
+  vim.cmd("botright split | resize 20 | terminal " .. cmd)
 
   local term_win = vim.api.nvim_get_current_win()
   local term_buf = vim.api.nvim_get_current_buf()
