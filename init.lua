@@ -88,7 +88,10 @@ vim.api.nvim_create_user_command("C", function(opts)
 
   local term_win = vim.api.nvim_get_current_win()
   local term_buf = vim.api.nvim_get_current_buf()
-
+  -- Move cursor to bottom of terminal buffer (Shift+G)
+  vim.api.nvim_buf_call(term_buf, function()
+    vim.cmd("normal! G")
+  end)
   -- Auto-close on WinLeave
   vim.api.nvim_create_autocmd("WinLeave", {
     buffer = term_buf,
