@@ -105,7 +105,7 @@ vim.api.nvim_create_user_command("C", function(opts)
 
   -- Print exit code and duration
   vim.api.nvim_create_autocmd("TermClose", {
-    buffer = term_buf,
+buffer = term_buf,
     once = true,
     callback = function(args)
       local elapsed = (vim.loop.hrtime() - start_time) / 1e9
@@ -117,3 +117,6 @@ vim.api.nvim_create_user_command("C", function(opts)
     end,
   })
 end, { nargs = "+" })
+
+-- Quick tab switch
+vim.keymap.set("n", "Z", ":tab split<CR>", { noremap = true })
