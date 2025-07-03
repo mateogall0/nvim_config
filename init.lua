@@ -120,3 +120,6 @@ end, { nargs = "+" })
 
 -- Quick tab switch
 vim.keymap.set("n", "Z", ":tab split<CR>", { noremap = true })
+
+-- Don't create a swap file
+vim.o.swapfile = false
