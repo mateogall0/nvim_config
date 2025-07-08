@@ -55,6 +55,7 @@ require("nvim-treesitter.configs").setup({
     "markdown", "markdown_inline", "toml", "vim", "query", "regex",
     "nasm", "glsl", "wgsl", "dart" },
   highlight = { enable = true },
+  indent = { enable = true },
   auto_install = true,
 })
 
