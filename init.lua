@@ -123,3 +123,8 @@ vim.keymap.set("n", "Z", ":tab split<CR>", { noremap = true })
 
 -- Don't create a swap file
 vim.o.swapfile = false
+
+vim.cmd([[
+  autocmd FileType dart,javascript,typescript,json,yaml,html,css,lua,graphql setlocal shiftwidth=2 tabstop=2 expandtab
+]])
+
