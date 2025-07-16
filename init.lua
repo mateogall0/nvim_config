@@ -1,6 +1,6 @@
   vim.o.number = true
   vim.o.relativenumber = true
-  vim.o.termguicolors = true
+  vim.o.termguicolors = false
   vim.o.clipboard = "unnamedplus"
   vim.o.cursorline = true
   vim.o.splitbelow = true
