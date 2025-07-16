@@ -85,19 +85,15 @@ vim.api.nvim_create_user_command("C", function(opts)
   local cmd = table.concat(opts.fargs, " ")
   local start_time = vim.loop.hrtime()
 
-  local tagged_cmd = string.format(
-    "bash -c '%s; echo EXIT:$?; read -n 1 -s -r -p \"Press any key to exit...\"'",
-    cmd
-  )
-  vim.cmd("botright split | resize 20 | terminal " .. tagged_cmd)
+  vim.cmd("botright split | resize 20 | terminal " .. cmd)
 
   local term_win = vim.api.nvim_get_current_win()
   local term_buf = vim.api.nvim_get_current_buf()
-
+  -- Move cursor to bottom of terminal buffer (Shift+G)
   vim.api.nvim_buf_call(term_buf, function()
     vim.cmd("normal! G")
   end)
-
+  -- Auto-close on WinLeave
   vim.api.nvim_create_autocmd("WinLeave", {
     buffer = term_buf,
     once = true,
@@ -108,38 +104,28 @@ vim.api.nvim_create_user_command("C", function(opts)
     end,
   })
 
-  vim.api.nvim_create_autocmd("BufReadPost", {
-    buffer = term_buf,
+  -- Print exit code and duration
+  vim.api.nvim_create_autocmd("TermClose", {
+buffer = term_buf,
     once = true,
-    callback = function()
+    callback = function(args)
       local elapsed = (vim.loop.hrtime() - start_time) / 1e9
-      local lines = vim.api.nvim_buf_get_lines(term_buf, 0, -1, false)
-
-      local exit_code = 0
-      for i = #lines, 1, -1 do
-        local match = lines[i]:match("^EXIT:(%d+)$")
-        if match then
-          exit_code = tonumber(match)
-          break
-        end
-      end
+      local exit_code = args.data or 0
 
       vim.schedule(function()
-        local msg = string.format("[Process exited %d] in %.2f seconds", exit_code, elapsed)
-        local hl = exit_code == 0 and "DiffAdd" or "ErrorMsg"
-        vim.api.nvim_echo({{msg, hl}}, false, {})
+        print(string.format("Process finished in %.2f seconds", elapsed))
       end)
     end,
   })
 end, { nargs = "+" })
 
-  -- Quick tab switch
-  vim.keymap.set("n", "Z", ":tab split<CR>", { noremap = true })
+-- Quick tab switch
+vim.keymap.set("n", "Z", ":tab split<CR>", { noremap = true })
 
-  -- Don't create a swap file
-  vim.o.swapfile = false
+-- Don't create a swap file
+vim.o.swapfile = false
 
-  vim.cmd([[
-    autocmd FileType dart,javascript,typescript,json,yaml,html,css,lua,graphql setlocal shiftwidth=2 tabstop=2 expandtab
-  ]])
+vim.cmd([[
+  autocmd FileType dart,javascript,typescript,json,yaml,html,css,lua,graphql setlocal shiftwidth=2 tabstop=2 expandtab
+]])
 
