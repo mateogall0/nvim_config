@@ -39,14 +39,11 @@
     -- Status line
     { "nvim-lualine/lualine.nvim" },
 
-    -- Theme
-    { "folke/tokyonight.nvim" }
   })
 
   -- Setup plugins
   require("nvim-web-devicons").setup()
   require("nvim-tree").setup()
-  require("lualine").setup({ options = { theme = "tokyonight" } })
   require("telescope").setup()
   require("nvim-treesitter.configs").setup({
     ensure_installed = { "lua", "python", "javascript", "bash",
@@ -78,7 +75,6 @@
 
   local lspconfig = require('lspconfig')
   lspconfig.pyright.setup{}
-  vim.cmd.colorscheme("tokyonight")
 
 
 vim.api.nvim_create_user_command("C", function(opts)
