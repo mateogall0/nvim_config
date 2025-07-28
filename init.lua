@@ -76,11 +76,6 @@
       -- Press `p` to insert the selected file path into command-line prompt
       vim.keymap.set("n", "p", function()
         local node = api.tree.get_node_under_cursor()
-        if not node or node.type ~= "file" then
-          print("Not a file")
-          return
-        end
-
         local path = " " .. vim.fn.fnameescape(node.absolute_path)
         -- Close the tree
         api.tree.close()
