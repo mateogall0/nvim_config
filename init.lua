@@ -43,14 +43,27 @@
 
   -- Setup plugins
   require("nvim-web-devicons").setup()
-  require("nvim-tree").setup()
+  require("nvim-tree").setup({
+    on_attach = function(bufnr)
+      local api = require("nvim-tree.api")
+      local function opts(desc)
+        return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+      end
+
+      -- Close NvimTree after opening file
+      vim.keymap.set("n", "<CR>", function()
+        api.node.open.edit()
+        api.tree.close()
+      end, opts("Open and Close Tree"))
+    end,
+  })
   require("telescope").setup()
   require("nvim-treesitter.configs").setup({
     ensure_installed = { "lua", "python", "javascript", "bash",
       "c", "cpp", "gdscript", "godot_resource", "gdshader","rust", "java",
       "c_sharp", "go", "gdscript", "html", "css", "json", "yaml",
       "markdown", "markdown_inline", "toml", "vim", "query", "regex",
-      "nasm", "glsl", "wgsl", "dart" },
+      "nasm", "glsl", "wgsl", "dart", "vue" },
     highlight = { enable = true },
     indent = { enable = true },
     auto_install = true,
