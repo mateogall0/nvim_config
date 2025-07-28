@@ -89,6 +89,7 @@
   local lspconfig = require('lspconfig')
   lspconfig.pyright.setup{}
 
+local last_cbuff = nil
 
 vim.api.nvim_create_user_command("C", function(opts)
   local cmd = table.concat(opts.fargs, " ")
@@ -98,12 +99,15 @@ vim.api.nvim_create_user_command("C", function(opts)
 
   local term_win = vim.api.nvim_get_current_win()
   local term_buf = vim.api.nvim_get_current_buf()
-  -- Move cursor to bottom of terminal buffer (Shift+G)
+  last_cbuff = term_buf  -- save for later
+
+  -- move cursor to bottom of terminal buffer (shift+g)
   vim.api.nvim_buf_call(term_buf, function()
     vim.cmd("normal! G")
   end)
-  -- Auto-close on WinLeave
-  vim.api.nvim_create_autocmd("WinLeave", {
+
+  -- auto-close on winleave
+  vim.api.nvim_create_autocmd("winleave", {
     buffer = term_buf,
     once = true,
     callback = function()
@@ -113,20 +117,42 @@ vim.api.nvim_create_user_command("C", function(opts)
     end,
   })
 
-  -- Print exit code and duration
-  vim.api.nvim_create_autocmd("TermClose", {
-buffer = term_buf,
+  -- print exit code and duration
+  vim.api.nvim_create_autocmd("termclose", {
+    buffer = term_buf,
     once = true,
     callback = function(args)
       local elapsed = (vim.loop.hrtime() - start_time) / 1e9
       local exit_code = args.data or 0
 
       vim.schedule(function()
-        print(string.format("Process finished in %.2f seconds", elapsed))
+        print(string.format("process finished in %.2f seconds", elapsed))
       end)
     end,
   })
 end, { nargs = "+" })
+
+
+-- Command to reopen last terminal buffer
+vim.api.nvim_create_user_command("Cb", function()
+  if last_cbuff and vim.api.nvim_buf_is_valid(last_cbuff) then
+    vim.cmd("botright split | resize 20")
+    local win = vim.api.nvim_get_current_win()
+    vim.api.nvim_win_set_buf(win, last_cbuff)
+
+    vim.api.nvim_create_autocmd("winleave", {
+      buffer = last_cbuff,
+      once = true,
+      callback = function()
+        if vim.api.nvim_win_is_valid(win) then
+          vim.api.nvim_win_close(win, true)
+        end
+      end,
+    })
+  else
+    print("No valid buffer from :C command.")
+  end
+end, {})
 
 -- Quick tab switch
 vim.keymap.set("n", "Z", ":tab split<CR>", { noremap = true })
