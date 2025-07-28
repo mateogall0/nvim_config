@@ -52,8 +52,13 @@
 
       -- Close NvimTree after opening file
       vim.keymap.set("n", "<CR>", function()
+        local node = api.tree.get_node_under_cursor()
+        if not node then return end
+
         api.node.open.edit()
-        api.tree.close()
+        if node.type == "file" then
+          api.tree.close()
+        end
       end, opts("Open and Close Tree"))
 
       vim.keymap.set("n", "r", function()
