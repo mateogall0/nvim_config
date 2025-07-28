@@ -55,6 +55,40 @@
         api.node.open.edit()
         api.tree.close()
       end, opts("Open and Close Tree"))
+
+      vim.keymap.set("n", "r", function()
+        local node = api.tree.get_node_under_cursor()
+        if not node or node.type ~= "file" then
+          print("Not a file")
+          return
+        end
+
+        -- Run your :C command with the selected file path
+        local path = node.absolute_path
+        vim.cmd("C " .. vim.fn.fnameescape(path))
+      end, opts("Run file with :C"))
+
+      -- Press `p` to insert the selected file path into command-line prompt
+      vim.keymap.set("n", "p", function()
+        local node = api.tree.get_node_under_cursor()
+        if not node or node.type ~= "file" then
+          print("Not a file")
+          return
+        end
+
+        local path = " " .. vim.fn.fnameescape(node.absolute_path)
+        -- Close the tree
+        api.tree.close()
+        -- Insert path into command-line prompt
+        local command = ":C " .. path
+
+        -- Feed the full command then move left by length of the path
+        local keys = vim.api.nvim_replace_termcodes(
+          command .. string.rep("<Left>", #path),
+          true, false, true
+        )
+        vim.api.nvim_feedkeys(keys, "n", false)
+      end, opts("Paste file path to command line"))
     end,
   })
   require("telescope").setup()
