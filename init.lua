@@ -1,127 +1,111 @@
-  vim.o.number = true
-  vim.o.relativenumber = true
-  vim.o.termguicolors = false
-  vim.o.clipboard = "unnamedplus"
-  vim.o.cursorline = true
-  vim.o.splitbelow = true
-  vim.o.splitright = true
-  -- Keymaps
-  vim.keymap.set("n", "<leader>e", ":Ex<CR>", { noremap = true }) -- Open file explorer
-  vim.keymap.set("n", "<leader>w", ":w<CR>", { noremap = true }) -- Save file
+vim.o.number = true
+vim.o.relativenumber = true
+vim.o.termguicolors = false
+vim.o.clipboard = "unnamedplus"
+vim.o.cursorline = true
+vim.o.splitbelow = true
+vim.o.splitright = true
+-- Keymaps
+vim.keymap.set("n", "<leader>e", ":Ex<CR>", { noremap = true }) -- Open file explorer
+vim.keymap.set("n", "<leader>w", ":w<CR>", { noremap = true }) -- Save file
 
-  -- Plugin management
-  local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-  if not vim.loop.fs_stat(lazypath) then
-    vim.fn.system({
-      "git", "clone", "--filter=blob:none",
-      "https://github.com/folke/lazy.nvim.git", lazypath
-    })
-  end
-  vim.opt.rtp:prepend(lazypath)
-
-  require("lazy").setup({
-    -- File explorer
-    { "nvim-tree/nvim-tree.lua", dependencies = "nvim-tree/nvim-web-devicons" },
-    
-    -- Fuzzy finder
-    { "nvim-telescope/telescope.nvim", dependencies = "nvim-lua/plenary.nvim" },
-    
-    -- LSP & Autocompletion
-    { "neovim/nvim-lspconfig" },
-    { "hrsh7th/nvim-cmp", dependencies = {
-      "hrsh7th/cmp-nvim-lsp", "hrsh7th/cmp-buffer", "hrsh7th/cmp-path",
-      "L3MON4D3/LuaSnip", "saadparwaiz1/cmp_luasnip"
-    }},
-
-    -- Treesitter for better syntax highlighting
-    { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
-
-    -- Status line
-    { "nvim-lualine/lualine.nvim" },
-
+-- Plugin management
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not vim.loop.fs_stat(lazypath) then
+  vim.fn.system({
+    "git", "clone", "--filter=blob:none",
+    "https://github.com/folke/lazy.nvim.git", lazypath
   })
+end
+vim.opt.rtp:prepend(lazypath)
 
-  -- Setup plugins
-  require("nvim-web-devicons").setup()
-  require("nvim-tree").setup({
-    on_attach = function(bufnr)
-      local api = require("nvim-tree.api")
-      local function opts(desc)
-        return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
-      end
+require("lazy").setup({
+  -- File explorer
+  { "nvim-tree/nvim-tree.lua", dependencies = "nvim-tree/nvim-web-devicons" },
+  
+  -- Fuzzy finder
+  { "nvim-telescope/telescope.nvim", dependencies = "nvim-lua/plenary.nvim" },
+  
+  -- LSP & Autocompletion
+  { "neovim/nvim-lspconfig" },
+  { "hrsh7th/nvim-cmp", dependencies = {
+    "hrsh7th/cmp-nvim-lsp", "hrsh7th/cmp-buffer", "hrsh7th/cmp-path",
+    "L3MON4D3/LuaSnip", "saadparwaiz1/cmp_luasnip"
+  }},
 
-      -- Close NvimTree after opening file
-      vim.keymap.set("n", "<CR>", function()
-        local node = api.tree.get_node_under_cursor()
-        if not node then return end
+  -- Treesitter for better syntax highlighting
+  { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" },
 
-        api.node.open.edit()
-        if node.type == "file" then
-          api.tree.close()
-        end
-      end, opts("Open and Close Tree"))
+  -- Status line
+  { "nvim-lualine/lualine.nvim" },
 
-      vim.keymap.set("n", "r", function()
-        local node = api.tree.get_node_under_cursor()
-        if not node or node.type ~= "file" then
-          print("Not a file")
-          return
-        end
+})
 
-        -- Run your :C command with the selected file path
-        local path = node.absolute_path
-        vim.cmd("C " .. vim.fn.fnameescape(path))
-      end, opts("Run file with :C"))
+-- Setup plugins
+require("nvim-web-devicons").setup()
+require("nvim-tree").setup({
+  on_attach = function(bufnr)
+    local api = require("nvim-tree.api")
+    local function opts(desc)
+      return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+    end
 
-      -- Press `p` to insert the selected file path into command-line prompt
+    -- Call the default keybindings first
+    api.config.mappings.default_on_attach(bufnr)
+
       vim.keymap.set("n", "p", function()
         local node = api.tree.get_node_under_cursor()
         local path = " " .. vim.fn.fnameescape(node.absolute_path)
-        -- Close the tree
-        api.tree.close()
-        -- Insert path into command-line prompt
+        -- api.tree.close()
         local command = ":C " .. path
-
-        -- Feed the full command then move left by length of the path
         local keys = vim.api.nvim_replace_termcodes(
           command .. string.rep("<Left>", #path),
           true, false, true
         )
         vim.api.nvim_feedkeys(keys, "n", false)
       end, opts("Paste file path to command line"))
-    end,
-  })
-  require("telescope").setup()
-  require("nvim-treesitter.configs").setup({
-    ensure_installed = { "lua", "python", "javascript", "bash",
-      "c", "cpp", "gdscript", "godot_resource", "gdshader","rust", "java",
-      "c_sharp", "go", "gdscript", "html", "css", "json", "yaml",
-      "markdown", "markdown_inline", "toml", "vim", "query", "regex",
-      "nasm", "glsl", "wgsl", "dart", "vue" },
-    highlight = { enable = true },
-    indent = { enable = true },
-    auto_install = true,
-  })
-
-  -- Completion setup
-  local cmp = require("cmp")
-  cmp.setup({
-    mapping = cmp.mapping.preset.insert({
-      ["<Tab>"] = cmp.mapping.select_next_item(),
-      ["<S-Tab>"] = cmp.mapping.select_prev_item(),
-      ["<CR>"] = cmp.mapping.confirm({ select = true })
-    }),
-    sources = cmp.config.sources({
-      { name = "nvim_lsp" },
-      { name = "buffer" },
-      { name = "path" }
+    -- Auto-close nvim-tree when switching to another window
+    vim.api.nvim_create_autocmd("WinLeave", {
+      buffer = bufnr,
+      callback = function()
+        if api.tree.is_visible() then
+          api.tree.close()
+        end
+      end,
     })
+  end,
+})
+require("telescope").setup()
+require("nvim-treesitter.configs").setup({
+  ensure_installed = { "lua", "python", "javascript", "bash",
+    "c", "cpp", "gdscript", "godot_resource", "gdshader","rust", "java",
+    "c_sharp", "go", "gdscript", "html", "css", "json", "yaml",
+    "markdown", "markdown_inline", "toml", "vim", "query", "regex",
+    "nasm", "glsl", "wgsl", "dart", "vue" },
+  highlight = { enable = true },
+  indent = { enable = true },
+  auto_install = true,
+})
+
+-- Completion setup
+local cmp = require("cmp")
+cmp.setup({
+  mapping = cmp.mapping.preset.insert({
+    ["<Tab>"] = cmp.mapping.select_next_item(),
+    ["<S-Tab>"] = cmp.mapping.select_prev_item(),
+    ["<CR>"] = cmp.mapping.confirm({ select = true })
+  }),
+  sources = cmp.config.sources({
+    { name = "nvim_lsp" },
+    { name = "buffer" },
+    { name = "path" }
   })
+})
 
-  vim.keymap.set('n', '<F2>', ':NvimTreeFocus<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<F2>', ':NvimTreeFocus<CR>', { noremap = true, silent = true })
 
-  local lspconfig = require('lspconfig')
-  lspconfig.pyright.setup{}
+local lspconfig = require('lspconfig')
+lspconfig.pyright.setup{}
 
 local last_cbuff = nil
 
