@@ -182,3 +182,7 @@ vim.cmd([[
   autocmd FileType dart,javascript,typescript,json,yaml,html,css,lua,graphql setlocal shiftwidth=2 tabstop=2 expandtab
 ]])
 
+
+-- Quick Command
+vim.keymap.set("n", "<Tab>", ":C ", { noremap = true })
+
