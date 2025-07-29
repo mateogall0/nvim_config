@@ -119,12 +119,10 @@ vim.api.nvim_create_user_command("C", function(opts)
   local term_buf = vim.api.nvim_get_current_buf()
   last_cbuff = term_buf  -- save for later
 
-  -- move cursor to bottom of terminal buffer (shift+g)
   vim.api.nvim_buf_call(term_buf, function()
     vim.cmd("normal! G")
   end)
 
-  -- auto-close on winleave
   vim.api.nvim_create_autocmd("winleave", {
     buffer = term_buf,
     once = true,
@@ -135,7 +133,6 @@ vim.api.nvim_create_user_command("C", function(opts)
     end,
   })
 
-  -- print exit code and duration
   vim.api.nvim_create_autocmd("termclose", {
     buffer = term_buf,
     once = true,
@@ -148,7 +145,10 @@ vim.api.nvim_create_user_command("C", function(opts)
       end)
     end,
   })
-end, { nargs = "+" })
+end, {
+  nargs = "+",
+  complete = "file",
+})
 
 
 -- Command to reopen last terminal buffer
