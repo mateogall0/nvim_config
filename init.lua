@@ -39,6 +39,14 @@ require("lazy").setup({
   -- Status line
   { "nvim-lualine/lualine.nvim" },
 
+  -- Surround selection using S", S{, S'
+  {
+    "kylechui/nvim-surround",
+    event = "VeryLazy",
+    config = function()
+      require("nvim-surround").setup()
+    end
+  }
 })
 
 -- Setup plugins
@@ -86,6 +94,7 @@ require("nvim-treesitter.configs").setup({
   indent = { enable = true },
   auto_install = true,
 })
+
 
 -- Completion setup
 local cmp = require("cmp")
