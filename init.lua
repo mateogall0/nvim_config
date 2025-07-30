@@ -5,9 +5,22 @@ vim.o.clipboard = "unnamedplus"
 vim.o.cursorline = true
 vim.o.splitbelow = true
 vim.o.splitright = true
--- Keymaps
-vim.keymap.set("n", "<leader>e", ":Ex<CR>", { noremap = true }) -- Open file explorer
-vim.keymap.set("n", "<leader>w", ":w<CR>", { noremap = true }) -- Save file
+vim.o.scrolloff = 7
+vim.o.virtualedit = "onemore"
+
+vim.keymap.set("n", "<End>", "g$")
+
+-- smart home mapping
+vim.keymap.set("n", "<Home>", function()
+  local col = vim.fn.col(".")
+  local first_non_blank = vim.fn.col("^")
+
+  if col == first_non_blank then
+    vim.cmd("normal! 0")
+  else
+    vim.cmd("normal! ^")
+  end
+end, { noremap = true, silent = true })
 
 -- Plugin management
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -190,8 +203,4 @@ vim.o.swapfile = false
 vim.cmd([[
   autocmd FileType dart,javascript,typescript,json,yaml,html,css,lua,graphql setlocal shiftwidth=2 tabstop=2 expandtab
 ]])
-
-
--- Quick Command
-vim.keymap.set("n", "<Tab>", ":C ", { noremap = true })
 
