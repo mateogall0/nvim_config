@@ -124,7 +124,7 @@ cmp.setup({
   })
 })
 
-vim.keymap.set('n', '<F2>', ':NvimTreeFocus<CR>', { noremap = true, silent = true })
+vim.keymap.set('n', '<Tab>', ':NvimTreeFocus<CR>', { noremap = true, silent = true })
 
 local lspconfig = require('lspconfig')
 lspconfig.pyright.setup{}
@@ -204,3 +204,4 @@ vim.cmd([[
   autocmd FileType dart,javascript,typescript,json,yaml,html,css,lua,graphql setlocal shiftwidth=2 tabstop=2 expandtab
 ]])
 
+vim.keymap.set("n", "<S-Tab>", ":C ", { noremap = true, silent = false })
