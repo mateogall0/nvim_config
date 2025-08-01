@@ -77,7 +77,7 @@ require("nvim-tree").setup({
       vim.keymap.set("n", "p", function()
         local node = api.tree.get_node_under_cursor()
         local path = " " .. vim.fn.fnameescape(node.absolute_path)
-        -- api.tree.close()
+        api.tree.close()
         local command = ":C " .. path
         local keys = vim.api.nvim_replace_termcodes(
           command .. string.rep("<Left>", #path),
