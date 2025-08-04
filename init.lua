@@ -65,6 +65,10 @@ require("lazy").setup({
 -- Setup plugins
 require("nvim-web-devicons").setup()
 require("nvim-tree").setup({
+  git = {
+    enable = true,
+    ignore = false, -- show gitignored files
+  },
   on_attach = function(bufnr)
     local api = require("nvim-tree.api")
     local function opts(desc)
