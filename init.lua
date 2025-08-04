@@ -2,13 +2,15 @@ vim.o.number = true
 vim.o.relativenumber = true
 vim.o.termguicolors = false
 vim.o.clipboard = "unnamedplus"
-vim.o.cursorline = true
 vim.o.splitbelow = true
 vim.o.splitright = true
 vim.o.scrolloff = 7
 vim.o.virtualedit = "onemore"
+vim.o.termguicolors = false
+vim.o.cursorline = false
 
-vim.keymap.set("n", "<End>", "g$")
+vim.o.cursorline = true
+vim.opt.cursorlineopt = "line"
 
 -- smart home mapping
 vim.keymap.set("n", "<Home>", function()
@@ -65,6 +67,7 @@ require("lazy").setup({
 -- Setup plugins
 require("nvim-web-devicons").setup()
 require("nvim-tree").setup({
+  view = {relativenumber = true, number = true},
   git = {
     enable = true,
     ignore = false, -- show gitignored files
