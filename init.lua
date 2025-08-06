@@ -9,11 +9,8 @@ vim.o.virtualedit = "onemore"
 vim.o.termguicolors = false
 vim.o.cursorline = false
 
-vim.o.cursorline = true
-vim.opt.cursorlineopt = "line"
-
 -- smart home mapping
-vim.keymap.set("n", "<Home>", function()
+vim.keymap.set({ "n", "x", "o" }, "<Home>", function()
   local col = vim.fn.col(".")
   local first_non_blank = vim.fn.col("^")
 
@@ -61,7 +58,7 @@ require("lazy").setup({
     config = function()
       require("nvim-surround").setup()
     end
-  }
+  },
 })
 
 -- Setup plugins
@@ -212,3 +209,23 @@ vim.cmd([[
 ]])
 
 vim.keymap.set("n", "<S-Tab>", ":C ", { noremap = true, silent = false })
+
+
+local map = vim.keymap.set
+local opts = { noremap = true, silent = true }
+
+-- Move current line up/down (normal mode)
+map("n", "<A-Up>",   ":m .-2<CR>==", opts)
+map("n", "<A-Down>", ":m .+1<CR>==", opts)
+
+-- Shift current line left/right (normal mode)
+map("n", "<A-Left>",  "<<", opts)
+map("n", "<A-Right>", ">>", opts)
+
+-- Move selected lines up/down (visual mode)
+map("v", "<A-Up>",   ":m '<-2<CR>gv=gv", opts)
+map("v", "<A-Down>", ":m '>+1<CR>gv=gv", opts)
+
+-- Shift selected lines left/right (visual mode)
+map("v", "<A-Left>",  "<gv", opts)
+map("v", "<A-Right>", ">gv", opts)
