@@ -229,3 +229,47 @@ map("v", "<A-Down>", ":m '>+1<CR>gv=gv", opts)
 -- Shift selected lines left/right (visual mode)
 map("v", "<A-Left>",  "<gv", opts)
 map("v", "<A-Right>", ">gv", opts)
+
+vim.api.nvim_create_user_command("Sl", function(opts)
+  local args = vim.split(opts.args, " ")
+  local delim = vim.pesc(args[1])          -- escape delimiter for pattern
+  local surround = args[2]
+  local open = surround:sub(1, 1)
+  local close = surround:sub(2, 2)
+
+  local range_start = opts.line1
+  local range_end = opts.line2
+
+  local cmd = string.format(
+    "%d,%ds/\\v(\\k+)(\\s*)%s/%s\\1%s\\2%s/g",
+    range_start,
+    range_end,
+    delim,
+    open,
+    close,
+    delim
+  )
+  vim.cmd(cmd)
+end, { nargs = "+", range = true })
+
+vim.api.nvim_create_user_command("Sr", function(opts)
+  local args = vim.split(opts.args, " ")
+  local delim = vim.pesc(args[1])
+  local surround = args[2]
+  local open = surround:sub(1, 1)
+  local close = surround:sub(2, 2)
+
+  local range_start = opts.line1
+  local range_end = opts.line2
+
+  -- Pattern: match delimiter + optional spaces + word after it, replace with quoted word
+  local cmd = string.format(
+    "%d,%ds/\\v%s(\\s*)(\\k+)/%s\\1\\2%s/g",
+    range_start,
+    range_end,
+    delim,
+    delim .. open,
+    close
+  )
+  vim.cmd(cmd)
+end, { nargs = "+", range = true })
