@@ -199,7 +199,24 @@ vim.api.nvim_create_user_command("Cb", function()
 end, {})
 
 -- Quick tab switch
-vim.keymap.set("n", "Z", ":tab split<CR>", { noremap = true })
+vim.keymap.set("n", "Z", function()
+  local cur_win = vim.api.nvim_get_current_win()
+  local cur_buf = vim.api.nvim_get_current_buf()
+  local cur_tab = vim.api.nvim_get_current_tabpage()
+
+  -- Open current buffer in a new tab
+  vim.cmd("tabnew")
+  vim.api.nvim_set_current_buf(cur_buf)
+
+  -- Go back to the original tab and close the window that had this buffer
+  vim.api.nvim_set_current_tabpage(cur_tab)
+  vim.api.nvim_set_current_win(cur_win)
+  vim.cmd("close")
+
+  -- Return to the new tab (last one)
+  local tabs = vim.api.nvim_list_tabpages()
+  vim.api.nvim_set_current_tabpage(tabs[#tabs])
+end, { noremap = true, silent = true })
 
 -- Don't create a swap file
 vim.o.swapfile = false
